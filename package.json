@@ -1,0 +1,44 @@
+{
+  "name": "@alexisoney/storyblok-to-nextjs",
+  "version": "0.0.1",
+  "description": "Opinionated Stortblok adapter for Next.js",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "rollup -c",
+    "start": "rollup -c -w",
+    "prepare": "husky install",
+    "prepublishOnly": "npm run build"
+  },
+  "author": "Alexis Oney <alexis.oney@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^22.0.2",
+    "@rollup/plugin-node-resolve": "^13.3.0",
+    "@types/node": "^18.7.13",
+    "@typescript-eslint/eslint-plugin": "^5.35.1",
+    "@typescript-eslint/parser": "^5.35.1",
+    "eslint": "^8.23.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "husky": "^8.0.1",
+    "lint-staged": "^13.0.3",
+    "next": "^12.2.5",
+    "rollup": "^2.78.1",
+    "rollup-plugin-cleaner": "^1.0.0",
+    "rollup-plugin-typescript2": "^0.33.0",
+    "typescript": "^4.8.2"
+  },
+  "dependencies": {
+    "@storyblok/js": "^1.7.2",
+    "file-system-cache": "^2.0.0",
+    "url-join": "^4.0.1"
+  },
+  "lint-staged": {
+    "*.tsx": [
+      "eslint --fix"
+    ]
+  },
+  "files": [
+    "dist"
+  ]
+}
