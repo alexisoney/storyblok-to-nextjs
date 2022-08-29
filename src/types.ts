@@ -1,4 +1,4 @@
-export {StoryblokComponentType as Block, StoryData as Story} from '@storyblok/js'
+export {StoryblokComponent as Block, StoryData as Story} from 'storyblok-js-client'
 
 export type StoryblokAsset =
   | ''

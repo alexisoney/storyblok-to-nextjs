@@ -1,14 +1,13 @@
-import {apiPlugin, StoriesParams, StoryblokClient, storyblokInit, StoryData} from '@storyblok/js'
+import StoryblokClient, {StoriesParams, StoryData} from 'storyblok-js-client'
 import Cache from 'file-system-cache'
 import {GetStaticPaths, GetStaticPathsResult, GetStaticProps} from 'next'
-import urljoin from 'url-join'
 
 type Config = {
-  token: string
+  accessToken?: string
+  version?: string
   languages?: string[]
   resolve_relations?: string
   excluding_slugs?: string
-  version?: StoriesParams['version']
 }
 
 class Storyblok {
@@ -22,22 +21,22 @@ class Storyblok {
   FSCacheStoriesKey = 'stories'
 
   constructor(config: Config) {
-    this.storyblokApi = (() => {
-      const {storyblokApi} = storyblokInit({
-        accessToken: config.token,
-        use: [apiPlugin],
-      })
+    if (!config.accessToken) {
+      throw Error('accessToken is missing')
+    }
 
-      if (!storyblokApi) throw Error('storyblokApi undefined')
+    if (config.version !== 'draft' && config.version !== 'published') {
+      throw Error('version must be draft or published')
+    }
 
-      return storyblokApi
-    })()
+    this.storyblokApi = new StoryblokClient({
+      accessToken: config.accessToken,
+    })
 
+    this.version = config.version
     this.languages = config.languages || []
     this.resolve_relations = config.resolve_relations || 'global-component.reference'
     this.excluding_slugs = config.excluding_slugs || '__config/*'
-    this.version =
-      config.version || process.env.STORYBLOK_VERSION === 'draft' ? 'draft' : 'published'
   }
 
   getStaticPaths: GetStaticPaths = async () => {
@@ -61,7 +60,7 @@ class Storyblok {
         if (this.languages.includes(params.slug[0])) {
           language = params.slug[0]
           if (params.slug.length === 1) {
-            slug = urljoin(language, 'index')
+            slug = [language, 'index'].join('/')
           } else {
             slug = params.slug.join('/')
           }
@@ -80,7 +79,7 @@ class Storyblok {
         .map((lang) => ({
           lang,
           name: null,
-          path: urljoin(lang, slug).replace('index', ''),
+          path: [lang, slug].join('/').replace('index', ''),
         }))
         .concat({
           lang: 'default',
@@ -110,6 +109,7 @@ class Storyblok {
       for (const language of ['default', ...this.languages]) {
         const allStories = await this.storyblokApi.getAll('cdn/stories', {
           resolve_relations: this.resolve_relations,
+          resolve_links: 'url',
           version: this.version,
           excluding_slugs: this.excluding_slugs,
           language,

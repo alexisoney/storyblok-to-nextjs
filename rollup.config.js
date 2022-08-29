@@ -1,7 +1,5 @@
 import typescript from 'rollup-plugin-typescript2'
 import cleaner from 'rollup-plugin-cleaner'
-import commonjs from '@rollup/plugin-commonjs'
-import resolve from '@rollup/plugin-node-resolve'
 import pkg from './package.json'
 
 export default {
@@ -19,9 +17,7 @@ export default {
     cleaner({
       targets: ['./dist/'],
     }),
-    commonjs(),
-    resolve(),
     typescript(),
   ],
-  external: ['@storyblok/js', 'file-system-cache', 'url-join'],
+  external: ['file-system-cache', 'storyblok-js-client'],
 }
