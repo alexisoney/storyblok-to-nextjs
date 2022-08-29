@@ -1,6 +1,6 @@
 {
   "name": "@alexisoney/storyblok-to-nextjs",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Opinionated Stortblok adapter for Next.js",
   "main": "dist/index.js",
   "scripts": {
@@ -24,11 +24,14 @@
     "rollup": "^2.78.1",
     "rollup-plugin-cleaner": "^1.0.0",
     "rollup-plugin-typescript2": "^0.33.0",
+    "storyblok-js-client": "github:alexisoney/storyblok-js-client",
     "typescript": "^4.8.2"
   },
   "dependencies": {
-    "file-system-cache": "^2.0.0",
-    "storyblok-js-client": "github:alexisoney/storyblok-js-client"
+    "file-system-cache": "^2.0.0"
+  },
+  "peerDependencies": {
+    "storyblok-js-client": "4.5.2"
   },
   "lint-staged": {
     "*.tsx": [

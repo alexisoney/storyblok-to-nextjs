@@ -19,5 +19,5 @@ export default {
     }),
     typescript(),
   ],
-  external: ['file-system-cache', 'storyblok-js-client'],
+  external: ['file-system-cache'],
 }
