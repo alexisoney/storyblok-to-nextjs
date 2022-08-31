@@ -10,6 +10,11 @@ type Config = {
   excluding_slugs?: string
 }
 
+type StaticProps = {
+  story: StoryData
+  stories: StoryData[]
+}
+
 class Storyblok {
   storyblokApi: StoryblokClient
   languages: string[]
@@ -51,7 +56,7 @@ class Storyblok {
     return {paths, fallback: false}
   }
 
-  getStaticProps: GetStaticProps = async ({params}) => {
+  getStaticProps: GetStaticProps<StaticProps> = async ({params}) => {
     if (params) {
       let language: string | undefined
       let slug: string
@@ -88,10 +93,15 @@ class Storyblok {
         })
         .filter(({lang}) => lang !== (language || 'default'))
 
+      const stories = await this.getStories()
+
       return {
         props: {
-          ...story,
-          translated_slugs,
+          story: {
+            ...story,
+            translated_slugs,
+          },
+          stories,
         },
       }
     }
