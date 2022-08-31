@@ -1,6 +1,11 @@
 import StoryblokClient, {StoriesParams, StoryData} from 'storyblok-js-client'
 import Cache from 'file-system-cache'
-import {GetStaticPaths, GetStaticPathsResult, GetStaticProps} from 'next'
+import {
+  GetStaticPaths,
+  GetStaticPathsResult,
+  GetStaticPropsContext,
+  GetStaticPropsResult,
+} from 'next'
 
 type Config = {
   accessToken?: string
@@ -8,11 +13,6 @@ type Config = {
   languages?: string[]
   resolve_relations?: string
   excluding_slugs?: string
-}
-
-type StaticProps = {
-  story: StoryData
-  stories: StoryData[]
 }
 
 class Storyblok {
@@ -24,6 +24,7 @@ class Storyblok {
 
   FSCache = Cache()
   FSCacheStoriesKey = 'stories'
+  FSCacheConfigKey = 'config'
 
   constructor(config: Config) {
     if (!config.accessToken) {
@@ -56,7 +57,15 @@ class Storyblok {
     return {paths, fallback: false}
   }
 
-  getStaticProps: GetStaticProps<StaticProps> = async ({params}) => {
+  getStaticProps = async <StoryType extends StoryData, ConfigType extends StoryData>({
+    params,
+  }: GetStaticPropsContext): Promise<
+    GetStaticPropsResult<{
+      story: StoryType
+      stories: StoryType[]
+      config: ConfigType
+    }>
+  > => {
     if (params) {
       let language: string | undefined
       let slug: string
@@ -78,7 +87,7 @@ class Storyblok {
         throw Error('getStaticProps: params.slug is not an array')
       }
 
-      const story = await this.getStory(slug)
+      const story = await this.getStory<StoryType>(slug)
 
       const translated_slugs: NonNullable<StoryData['translated_slugs']> = this.languages
         .map((lang) => ({
@@ -93,7 +102,9 @@ class Storyblok {
         })
         .filter(({lang}) => lang !== (language || 'default'))
 
-      const stories = await this.getStories()
+      const stories = await this.getStories<StoryType>()
+
+      const config = await this.getConfig<ConfigType>()
 
       return {
         props: {
@@ -102,16 +113,17 @@ class Storyblok {
             translated_slugs,
           },
           stories,
+          config,
         },
       }
     }
     throw Error('getStaticProps: No params')
   }
 
-  getStories = async (): Promise<StoryData[]> => {
+  getStories = async <StoryType extends StoryData>(): Promise<StoryType[]> => {
     const cachedStories = await this.FSCache.get(this.FSCacheStoriesKey)
 
-    let stories: StoryData[] = []
+    let stories: StoryType[] = []
 
     if (cachedStories) {
       stories = cachedStories
@@ -133,8 +145,8 @@ class Storyblok {
     return stories
   }
 
-  getStory = async (slug: string) => {
-    const stories: StoryData[] = await this.FSCache.get(this.FSCacheStoriesKey)
+  getStory = async <StoryType extends StoryData>(slug: string): Promise<StoryType> => {
+    const stories: StoryType[] = await this.FSCache.get(this.FSCacheStoriesKey)
 
     if (stories) {
       const story = stories.find(({full_slug}) => slug === full_slug)
@@ -149,11 +161,22 @@ class Storyblok {
     }
   }
 
-  getConfig = async <Type>(slug = '__config/config'): Promise<Type> => {
-    const {data} = await this.storyblokApi.get(`cdn/stories/${slug}`, {
-      version: this.version,
-    })
-    return data.story
+  getConfig = async <StoryType extends StoryData>(slug = '__config/config'): Promise<StoryType> => {
+    const cachedConfig = await this.FSCache.get(this.FSCacheConfigKey)
+
+    if (cachedConfig) {
+      return cachedConfig
+    } else {
+      const {data} = await this.storyblokApi.get(`cdn/stories/${slug}`, {
+        version: this.version,
+      })
+
+      const config = data.story
+
+      this.FSCache.set(this.FSCacheConfigKey, config)
+
+      return config
+    }
   }
 }
 
