@@ -6,6 +6,7 @@ import {
   GetStaticPropsContext,
   GetStaticPropsResult,
 } from 'next'
+import {getTranslatedSlug, normalizeUrl, toStoryblokSlug} from './helpers'
 
 type Config = {
   accessToken?: string
@@ -49,8 +50,13 @@ class Storyblok {
     const stories = await this.getStories()
     const paths: GetStaticPathsResult['paths'] = []
 
-    stories.forEach((story) => {
-      const slug = story.full_slug.replace('index', '').split('/')
+    stories.forEach(({full_slug, parent_id}) => {
+      let slug
+      if (parent_id === null) {
+        slug = full_slug.replace('index', '').split('/')
+      } else {
+        slug = full_slug.split('/')
+      }
       paths.push({params: {slug: slug}})
     })
 
@@ -67,51 +73,18 @@ class Storyblok {
     }>
   > => {
     if (params) {
-      let language: string | undefined
-      let slug: string
-
-      if (Array.isArray(params.slug)) {
-        if (this.languages.includes(params.slug[0])) {
-          language = params.slug[0]
-          if (params.slug.length === 1) {
-            slug = [language, 'index'].join('/')
-          } else {
-            slug = params.slug.join('/')
-          }
-        } else {
-          slug = params.slug.join('/')
-        }
-      } else if (typeof params.slug === 'undefined') {
-        slug = 'index'
-      } else {
-        throw Error('getStaticProps: params.slug is not an array')
-      }
-
-      const story = await this.getStory<StoryType>(slug)
-
-      const translated_slugs: NonNullable<StoryData['translated_slugs']> = this.languages
-        .map((lang) => ({
-          lang,
-          name: null,
-          path: [lang, slug].join('/').replace('index', ''),
-        }))
-        .concat({
-          lang: 'default',
-          name: null,
-          path: slug.replace('index', ''),
-        })
-        .filter(({lang}) => lang !== (language || 'default'))
-
       const stories = await this.getStories<StoryType>()
-
       const config = await this.getConfig<ConfigType>()
+
+      const storyblokSlug = toStoryblokSlug(this.languages, params.slug)
+      const story = await this.getStory<StoryType>(storyblokSlug)
+
+      story.full_slug = normalizeUrl([story.full_slug], story)
+      story.translated_slugs = getTranslatedSlug(story, this.languages)
 
       return {
         props: {
-          story: {
-            ...story,
-            translated_slugs,
-          },
+          story,
           stories,
           config,
         },
@@ -149,7 +122,7 @@ class Storyblok {
     const stories: StoryType[] = await this.FSCache.get(this.FSCacheStoriesKey)
 
     if (stories) {
-      const story = stories.find(({full_slug}) => slug === full_slug)
+      const story = stories.find(({full_slug}) => new RegExp(`^${slug}/?$`).test(full_slug))
 
       if (story) {
         return story
