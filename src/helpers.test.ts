@@ -1,4 +1,10 @@
-import {normalizeUrl, getTranslatedSlug} from './helpers'
+import {normalizeUrl, getTranslatedSlug, getNextSlug} from './helpers'
+
+describe('getNextSlug', () => {
+  it('should not return config folder', () => {
+    expect(getNextSlug({full_slug: '__config/config', parent_id: 123})).toBe(undefined)
+  })
+})
 
 describe('normalizeUrl', () => {
   it('should convert root index to /', () => {

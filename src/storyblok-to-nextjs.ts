@@ -6,21 +6,19 @@ import {
   GetStaticPropsContext,
   GetStaticPropsResult,
 } from 'next'
-import {getTranslatedSlug, normalizeUrl, toStoryblokSlug} from './helpers'
+import {getNextSlug, getTranslatedSlug, normalizeUrl, toStoryblokSlug} from './helpers'
 
 type Config = {
   accessToken?: string
   version?: string
   languages?: string[]
   resolve_relations?: string
-  excluding_slugs?: string
 }
 
 class Storyblok {
   storyblokApi: StoryblokClient
   languages: string[]
   resolve_relations: string | undefined
-  excluding_slugs: string | undefined
   version: StoriesParams['version']
 
   FSCache = Cache()
@@ -43,21 +41,15 @@ class Storyblok {
     this.version = config.version
     this.languages = config.languages || []
     this.resolve_relations = config.resolve_relations || 'global-component.reference'
-    this.excluding_slugs = config.excluding_slugs || '__config/*'
   }
 
   getStaticPaths: GetStaticPaths = async () => {
     const stories = await this.getStories()
     const paths: GetStaticPathsResult['paths'] = []
 
-    stories.forEach(({full_slug, parent_id}) => {
-      let slug
-      if (parent_id === null) {
-        slug = full_slug.replace('index', '').split('/')
-      } else {
-        slug = full_slug.split('/')
-      }
-      paths.push({params: {slug: slug}})
+    stories.forEach((story) => {
+      const slug = getNextSlug(story)
+      if (slug) paths.push({params: {slug}})
     })
 
     return {paths, fallback: false}
@@ -106,7 +98,6 @@ class Storyblok {
           resolve_relations: this.resolve_relations,
           resolve_links: 'url',
           version: this.version,
-          excluding_slugs: this.excluding_slugs,
           language,
         })
 

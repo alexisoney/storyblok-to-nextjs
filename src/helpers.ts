@@ -5,6 +5,25 @@ type Story = Pick<StoryData, 'full_slug' | 'default_full_slug'> & {
   parent_id: number | null
 }
 
+export function getNextSlug({
+  full_slug,
+  parent_id,
+}: {
+  full_slug: string
+  parent_id: number | null
+}): string[] | void {
+  if (full_slug.startsWith('__config')) return
+
+  let slug
+  if (parent_id === null) {
+    slug = full_slug.replace('index', '').split('/')
+  } else {
+    slug = full_slug.split('/')
+  }
+
+  return slug
+}
+
 export function toStoryblokSlug(
   languages: string[],
   nextSlug: string | string[] | undefined
