@@ -17,7 +17,11 @@ export default {
     cleaner({
       targets: ['./dist/'],
     }),
-    typescript(),
+    typescript({
+      tsconfigOverride: {
+        exclude: ['**/__tests__', '**/*.test.ts'],
+      },
+    }),
   ],
   external: ['file-system-cache'],
 }

@@ -7,11 +7,13 @@
     "build": "rollup -c",
     "start": "rollup -c -w",
     "prepare": "husky install",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "test": "jest --watch"
   },
   "author": "Alexis Oney <alexis.oney@gmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "@types/jest": "^28.1.8",
     "@types/node": "^18.7.13",
     "@typescript-eslint/eslint-plugin": "^5.35.1",
     "@typescript-eslint/parser": "^5.35.1",
@@ -19,12 +21,14 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
     "husky": "^8.0.1",
+    "jest": "^28.1.3",
     "lint-staged": "^13.0.3",
     "next": "^12.2.5",
     "rollup": "^2.78.1",
     "rollup-plugin-cleaner": "^1.0.0",
     "rollup-plugin-typescript2": "^0.33.0",
     "storyblok-js-client": "github:alexisoney/storyblok-js-client",
+    "ts-jest": "^28.0.8",
     "typescript": "^4.8.2"
   },
   "dependencies": {
