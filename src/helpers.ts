@@ -28,7 +28,6 @@ export function toStoryblokSlug(
   languages: string[],
   nextSlug: string | string[] | undefined
 ): string {
-  console.log(nextSlug)
   let language: string | undefined
   let slug: string
 
@@ -49,7 +48,6 @@ export function toStoryblokSlug(
     throw Error('getStaticProps: params.slug is not an array')
   }
 
-  console.log(slug)
   return slug
 }
 

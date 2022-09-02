@@ -1,4 +1,4 @@
-import StoryblokClient, {StoriesParams, StoryData} from 'storyblok-js-client'
+import StoryblokClient, {StoriesParams, StoryblokComponent, StoryData} from 'storyblok-js-client'
 import Cache from 'file-system-cache'
 import {
   GetStaticPaths,
@@ -7,6 +7,7 @@ import {
   GetStaticPropsResult,
 } from 'next'
 import {getNextSlug, getTranslatedSlug, normalizeUrl, toStoryblokSlug} from './helpers'
+import urljoin from 'url-join'
 
 type Config = {
   accessToken?: string
@@ -55,30 +56,47 @@ class Storyblok {
     return {paths, fallback: false}
   }
 
-  getStaticProps = async <StoryType extends StoryData, ConfigType extends StoryData>({
+  getStaticProps = async <
+    StoryblokBlock extends StoryblokComponent<string>,
+    StoryblokStory extends StoryData & {content: {blocks?: StoryblokBlock[]}},
+    ConfigStory extends StoryData
+  >({
     params,
   }: GetStaticPropsContext): Promise<
     GetStaticPropsResult<{
-      story: StoryType
-      stories: StoryType[]
-      config: ConfigType
+      stories?: StoryblokStory[]
+      story?: StoryblokStory
+      config?: ConfigStory
+      layout?: StoryblokBlock[]
     }>
   > => {
     if (params) {
-      const stories = await this.getStories<StoryType>()
-      const config = await this.getConfig<ConfigType>()
+      const stories = await this.getStories<StoryblokStory>()
 
       const storyblokSlug = toStoryblokSlug(this.languages, params.slug)
-      const story = await this.getStory<StoryType>(storyblokSlug)
+      const story = await this.getStory<StoryblokStory>(storyblokSlug)
 
       story.full_slug = normalizeUrl([story.full_slug], story)
       story.translated_slugs = getTranslatedSlug(story, this.languages)
+
+      const config = stories.find(({content: {component}}) => component === 'config') as
+        | ConfigStory
+        | undefined
+
+      const layout = stories
+        .filter(({full_slug}) => {
+          const basePath = story.lang === 'default' ? '' : story.lang
+          return full_slug.startsWith(urljoin(basePath, '__config/layouts'))
+        })
+        .map(({content}) => content.blocks && content.blocks[0])
+        .filter((block): block is StoryblokBlock => !!block)
 
       return {
         props: {
           story,
           stories,
           config,
+          layout,
         },
       }
     }
