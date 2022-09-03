@@ -41,7 +41,7 @@
     "url-join": ">=4.0.1"
   },
   "lint-staged": {
-    "*.tsx": [
+    "*.ts": [
       "eslint --fix"
     ]
   },
