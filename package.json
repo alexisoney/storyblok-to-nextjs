@@ -1,6 +1,6 @@
 {
   "name": "@alexisoney/storyblok-to-nextjs",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Opinionated Stortblok adapter for Next.js",
   "main": "dist/index.js",
   "scripts": {
