@@ -144,22 +144,13 @@ class Storyblok {
     }
   }
 
-  getConfig = async <StoryType extends StoryData>(slug = '__config/config'): Promise<StoryType> => {
-    const cachedConfig = await this.FSCache.get(this.FSCacheConfigKey)
+  getConfig = async <StoryType extends StoryData>(component = 'config'): Promise<StoryType> => {
+    const stories = await this.getStories()
+    const config = stories.find((story) => story.content.component === component) as StoryType
 
-    if (cachedConfig) {
-      return cachedConfig
-    } else {
-      const {data} = await this.storyblokApi.get(`cdn/stories/${slug}`, {
-        version: this.version,
-      })
+    if (config) return config
 
-      const config = data.story
-
-      this.FSCache.set(this.FSCacheConfigKey, config)
-
-      return config
-    }
+    throw Error('Config story not found')
   }
 }
 
