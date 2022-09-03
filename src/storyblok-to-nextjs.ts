@@ -41,7 +41,8 @@ class Storyblok {
 
     this.version = config.version
     this.languages = config.languages || []
-    this.resolve_relations = config.resolve_relations || 'global-component.reference'
+    this.resolve_relations =
+      config.resolve_relations || 'global-component.reference,blog.authors,blog.categories'
   }
 
   getStaticPaths: GetStaticPaths = async () => {
