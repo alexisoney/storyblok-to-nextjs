@@ -12,7 +12,7 @@ export function getNextSlug({
   full_slug: string
   parent_id: number | null
 }): string[] | void {
-  if (full_slug.startsWith('__config')) return
+  if (full_slug.includes('__config')) return
 
   let slug
   if (parent_id === null) {

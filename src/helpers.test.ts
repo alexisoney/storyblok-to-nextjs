@@ -4,6 +4,10 @@ describe('getNextSlug', () => {
   it('should not return config folder', () => {
     expect(getNextSlug({full_slug: '__config/config', parent_id: 123})).toBe(undefined)
   })
+
+  it('should not return translated config folder', () => {
+    expect(getNextSlug({full_slug: 'en/__config/config', parent_id: 123})).toBe(undefined)
+  })
 })
 
 describe('normalizeUrl', () => {
