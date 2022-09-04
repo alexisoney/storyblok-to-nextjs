@@ -13,13 +13,12 @@ type Config = {
   accessToken?: string
   version?: string
   languages?: string[]
-  resolve_relations?: string
 }
 
 class Storyblok {
   storyblokApi: StoryblokClient
   languages: string[]
-  resolve_relations: string | undefined
+  resolve_relations: string
   version: StoriesParams['version']
 
   FSCache = Cache()
@@ -41,8 +40,7 @@ class Storyblok {
 
     this.version = config.version
     this.languages = config.languages || []
-    this.resolve_relations =
-      config.resolve_relations || 'global-component.reference,blog.authors,blog.categories'
+    this.resolve_relations = 'global-component.reference,blog.authors,blog.categories'
   }
 
   getStaticPaths: GetStaticPaths = async () => {
