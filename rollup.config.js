@@ -7,7 +7,7 @@ export default [
     output: [
       {
         dir: 'dist/client/',
-        format: 'esm',
+        format: 'cjs',
         exports: 'named',
         sourcemap: true,
       },
@@ -31,7 +31,7 @@ export default [
     output: [
       {
         dir: 'dist/node',
-        format: 'esm',
+        format: 'cjs',
         exports: 'named',
         sourcemap: true,
       },
