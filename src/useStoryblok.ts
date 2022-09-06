@@ -2,14 +2,13 @@
 
 import StoryblokClient from 'storyblok-js-client'
 import {useCallback, useEffect, useState} from 'react'
+import {RESOLVE_RELATIONS} from './config'
 
 declare global {
   interface Window {
     StoryblokBridge: StoryblokClient
   }
 }
-
-const RESOLVE_RELATIONS = 'global-component.reference,blog.authors,blog.categories'
 
 const storyblok = new StoryblokClient({accessToken: process.env.NEXT_PUBLIC_STORYBLOK_TOKEN})
 

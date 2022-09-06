@@ -8,6 +8,7 @@ import {
 } from 'next'
 import {getNextSlug, getTranslatedSlug, normalizeUrl, toStoryblokSlug} from './helpers'
 import urljoin from 'url-join'
+import {RESOLVE_RELATIONS} from './config'
 
 type Config = {
   accessToken?: string
@@ -40,7 +41,7 @@ class Storyblok {
 
     this.version = config.version
     this.languages = config.languages || []
-    this.resolve_relations = 'global-component.reference,blog.authors,blog.categories'
+    this.resolve_relations = RESOLVE_RELATIONS
   }
 
   getStaticPaths: GetStaticPaths = async () => {

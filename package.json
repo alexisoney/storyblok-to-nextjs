@@ -2,13 +2,21 @@
   "name": "@alexisoney/storyblok-to-nextjs",
   "version": "0.0.6",
   "description": "Opinionated Stortblok adapter for Next.js",
-  "main": "dist/client/index.js",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "browser": {
+    "file-system-cache": false
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "rollup -c",
     "start": "rollup -c -w",
     "prepare": "husky install",
     "prepublishOnly": "npm run build",
-    "test": "jest --watch"
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "author": "Alexis Oney <alexis.oney@gmail.com>",
   "license": "MIT",
@@ -49,8 +57,5 @@
     "*.ts": [
       "eslint --fix"
     ]
-  },
-  "files": [
-    "dist"
-  ]
+  }
 }
