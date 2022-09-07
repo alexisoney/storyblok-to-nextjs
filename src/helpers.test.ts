@@ -13,6 +13,7 @@ describe('getNextSlug', () => {
 describe('normalizeUrl', () => {
   it('should convert root index to /', () => {
     expect(normalizeUrl(['index'], {parent_id: null})).toBe('/')
+    expect(normalizeUrl(['index'], {parent_id: 0})).toBe('/')
   })
 
   it('should keep nested index', () => {

@@ -15,7 +15,7 @@ export function getNextSlug({
   if (full_slug.includes('__config')) return
 
   let slug
-  if (parent_id === null) {
+  if (!parent_id) {
     slug = full_slug.replace('index', '').split('/')
   } else {
     slug = full_slug.split('/')
@@ -53,7 +53,7 @@ export function toStoryblokSlug(
 
 export function normalizeUrl(slugs: string[], story: {parent_id: number | null}): string {
   const slug = urljoin(slugs)
-  const formattedSlug = story.parent_id === null ? slug.replace(/\/?index/, '') : slug
+  const formattedSlug = story.parent_id ? slug : slug.replace(/\/?index/, '')
   const withoutTrailingSlash = formattedSlug.replace(/\/$/, '')
   return withoutTrailingSlash ? withoutTrailingSlash : '/'
 }
