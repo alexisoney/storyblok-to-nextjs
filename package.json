@@ -47,6 +47,7 @@
     "axios": "^0.27.2",
     "file-system-cache": "^2.0.0",
     "storyblok-js-client": "github:alexisoney/storyblok-js-client",
+    "storyblok-rich-text-react-renderer": "^2.6.1",
     "url-join": ">=4.0.1"
   },
   "peerDependencies": {
