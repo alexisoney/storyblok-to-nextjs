@@ -27,5 +27,5 @@ export default {
       },
     }),
   ],
-  external: ['file-system-cache', 'storyblok-js-client', 'url-join', 'react'],
+  external: ['file-system-cache', 'storyblok-js-client', 'url-join', 'react', 'next/future/image'],
 }
